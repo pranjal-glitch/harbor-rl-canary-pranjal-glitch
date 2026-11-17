@@ -1,0 +1,34 @@
+{
+    "schema_version": 1,
+    "id": "d2f8e3d3-e9ff-4d30-ac46-5cbe4023c903",
+    "started_at": "2026-11-17T08:56:42.275410",
+    "updated_at": "2026-11-17T08:57:12.345243",
+    "finished_at": "2026-11-17T08:57:12.345243",
+    "n_total_trials": 1,
+    "stats": {
+        "n_completed_trials": 1,
+        "n_errored_trials": 1,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "oracle__adhoc": {
+                "n_trials": 0,
+                "n_errors": 1,
+                "metrics": [],
+                "pass_at_k": {},
+                "reward_stats": {},
+                "exception_stats": {
+                    "RewardFileNotFoundError": [
+                        "reconcile-bug__q4QD8Bq"
+                    ]
+                }
+            }
+        },
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null
+    }
+}

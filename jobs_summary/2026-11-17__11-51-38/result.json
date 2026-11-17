@@ -1,0 +1,34 @@
+{
+    "schema_version": 1,
+    "id": "c5da4ead-9028-4fb0-a3b8-92276e619564",
+    "started_at": "2026-11-17T11:51:44.313266",
+    "updated_at": "2026-11-17T11:55:53.883902",
+    "finished_at": "2026-11-17T11:55:53.883902",
+    "n_total_trials": 1,
+    "stats": {
+        "n_completed_trials": 1,
+        "n_errored_trials": 1,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "terminus-2__qwen/qwen3.8-27b__adhoc": {
+                "n_trials": 0,
+                "n_errors": 1,
+                "metrics": [],
+                "pass_at_k": {},
+                "reward_stats": {},
+                "exception_stats": {
+                    "RateLimitError": [
+                        "reconcile-bug__93ummuj"
+                    ]
+                }
+            }
+        },
+        "n_input_tokens": 4805,
+        "n_cache_tokens": 0,
+        "n_output_tokens": 377,
+        "cost_usd": 0.005352
+    }
+}

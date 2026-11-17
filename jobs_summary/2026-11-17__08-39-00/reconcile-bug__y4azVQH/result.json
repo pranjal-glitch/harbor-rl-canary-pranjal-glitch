@@ -1,0 +1,124 @@
+{
+    "schema_version": 1,
+    "id": "03ea46ab-73fc-4d26-8e88-0a1b2a374ee6",
+    "task_name": "harbor/reconcile-bug",
+    "trial_name": "reconcile-bug__y4azVQH",
+    "trial_uri": "file:///home/pranjal/projects/harbor-rl-canary-pranjal-glitch/jobs/2026-11-17__08-39-00/reconcile-bug__y4azVQH",
+    "task_id": {
+        "path": "tasks/reconcile-bug"
+    },
+    "source": null,
+    "task_checksum": "6ecce14c0ff937b3f57c98f7b129ca304c5f6c4ebabd6c38c0a91a0200163e12",
+    "config": {
+        "schema_version": 1,
+        "task": {
+            "path": "tasks/reconcile-bug",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "reconcile-bug__y4azVQH",
+        "trials_dir": "jobs/2026-11-17__08-39-00",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "nop",
+            "import_path": null,
+            "model_name": null,
+            "base_url": null,
+            "model_api_key_name": null,
+            "model_api_format": null,
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "override_error_policy": {},
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "d0541dc8-17b3-4fab-a3fa-db96ec2e49af",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "nop",
+        "version": "1.0.0",
+        "model_info": null
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "model_usage": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "verifier_environment_mode": "separate",
+    "exception_info": null,
+    "started_at": "2026-11-17T08:39:03.135539Z",
+    "finished_at": "2026-11-17T08:39:57.508604Z",
+    "environment_setup": {
+        "started_at": "2026-11-17T08:39:03.205794Z",
+        "finished_at": "2026-11-17T08:39:28.873385Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-17T08:39:28.873446Z",
+        "finished_at": "2026-11-17T08:39:28.873516Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-17T08:39:28.873603Z",
+        "finished_at": "2026-11-17T08:39:28.875668Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-17T08:39:34.565954Z",
+        "finished_at": "2026-11-17T08:39:57.508584Z"
+    },
+    "step_results": null,
+    "reward_valid": true
+}

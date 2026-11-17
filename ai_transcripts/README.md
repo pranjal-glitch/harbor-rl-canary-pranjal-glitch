@@ -1,8 +1,7 @@
-# AI Agent Evidence
+# AI Agent Transcripts and Evidence
 
-This directory contains agent output logs copied from available Harbor jobs.
-The job identifier is included in each filename.
+This folder contains available agent output logs and trajectories collected
+from Harbor runs. These are retained as experiment evidence.
 
-These files are evidence of attempted agent runs, not proof that every run
-completed successfully. Refer to jobs_summary.csv and reports/EXPERIMENT_REPORT.md
-for rewards, errors, and experiment limitations.
+Some attempted runs ended with provider rate limits, authentication errors,
+or agent runtime failures. They are not represented as successful trials.
