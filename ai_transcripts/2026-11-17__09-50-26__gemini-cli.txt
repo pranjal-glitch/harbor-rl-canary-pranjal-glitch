@@ -1,0 +1,18 @@
+Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
+YOLO mode is enabled. All tool calls will be automatically approved.
+YOLO mode is enabled. All tool calls will be automatically approved.
+Ripgrep is not available. Falling back to GrepTool.
+Error when talking to Gemini API Full report available at: /tmp/gemini-client-error-Turn.run-sendMessageStream-2026-11-17T09-53-30-792Z.json _ApiError: {"error":{"message":"{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n        \"metadata\": {\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.LocalizedMessage\",\n        \"locale\": \"en-US\",\n        \"message\": \"API key not valid. Please pass a valid API key.\"\n      }\n    ]\n  }\n}\n","code":400,"status":"Bad Request"}}
+    at throwErrorIfNotOK (file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:267953:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:267716:7
+    at async Models.generateContentStream (file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:268812:16)
+    at async file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:313348:19
+    at async file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:289294:23
+    at async retryWithBackoff (file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:309615:23)
+    at async GeminiChat.makeApiCallAndProcessStream (file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:334930:28)
+    at async GeminiChat.streamWithRetries (file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:334610:29)
+    at async Turn.run (file:///root/.nvm/versions/node/v22.23.5/lib/node_modules/@google/gemini-cli/bundle/chunk-RCB6BI5H.js:335668:24) {
+  status: 400
+}
+An unexpected critical error occurred:[object Object]

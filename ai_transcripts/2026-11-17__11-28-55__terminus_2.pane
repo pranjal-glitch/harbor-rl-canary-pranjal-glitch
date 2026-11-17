@@ -1,0 +1,117 @@
+[?2004hroot@898bf4e3b85c:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@898bf4e3b85c:/app# clear
+[?2004l[H[J[3J[?2004hroot@898bf4e3b85c:/app# cat /app/reconcile.py
+[?2004limport argparse
+import csv
+from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
+import json
+
+
+def reconcile(csv_path: str) -> dict:
+    records: dict[str, dict] = {}
+    with open(csv_path, mode="r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            tx_id = row["tx_id"]
+            # Bug 3: Stripping timezone offset before comparison (naive comparison)
+            ts = datetime.fromisoformat(row["timestamp"].strip()).replace(tzinfo=None)
+            if tx_id not in records or ts >= records[tx_id]["ts"]:
+                records[tx_id] = {
+                    "ts": ts,
+                    "amount": Decimal(row["amount"].strip()),
+                    "status": row["status"].strip(),
+                }
+
+    total_valid_amount = Decimal("0")
+    valid_count = 0
+    failed_count = 0
+
+    for rec in records.values():
+        status = rec["status"]
+        # Bug 2: Incorrectly treating PENDING as VALID
+        if status in ("VALID", "PENDING"):
+            total_valid_amount += rec["amount"]
+            valid_count += 1
+        elif status == "FAILED":
+            failed_count += 1
+
+    rounded_total = total_valid_amount.quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP
+    )
+    return {
+        "total_valid_amount": float(rounded_total),
+        "valid_count": valid_count,
+        "failed_count": failed_count,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Payment Reconciliation CLI")
+    parser.add_argument("--input", required=True, help="Path to input CSV file")
+    args = parser.parse_args()
+
+    # Bug 1: Defect in accessing CLI argument (input_file instead of input)
+    result = reconcile(args.input_file)
+    print(json.dumps(result))
+
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@898bf4e3b85c:/app# ls -la /app/
+[?2004ltotal 12
+drwxr-xr-x 1 root root 4096 Nov 16 19:07 .
+drwxr-xr-x 1 root root 4096 Nov 17 11:30 ..
+-rw-r--r-- 1 root root 1799 Nov 16 19:02 reconcile.py
+[?2004hroot@898bf4e3b85c:/app# python3 -c "
+[?2004l[?2004h> import textwrap
+[?2004l[?2004h> code = textwrap.dedent('''
+[?2004l[?2004h> import argparse
+[?2004l[?2004h> import csv
+[?2004l[?2004h> from datetime import datetime
+[?2004l[?2004h> from decimal import Decimal, ROUND_HALF_UP
+[?2004l[?2004h> import json
+[?2004l[?2004h> 
+[?2004l[?2004h> def parse_ts(ts_str):
+[?2004l[?2004h>     ts_str = ts_str.strip()
+[?2004l[?2004h>     if ts_str.endswith('Z'):
+[?2004l[?2004h>         ts_str = ts_str[:-1] + '+00:00'
+[?2004l[?2004h>     return datetime.fromisoformat(ts_str)
+[?2004l[?2004h> 
+[?2004l[?2004h> def reconcile(csv_path):
+[?2004l[?2004h>     records = {}
+[?2004l[?2004h>     with open(csv_path, mode='r', encoding='utf-8') as f:
+[?2004l[?2004h>         reader = csv.DictReader(f)
+[?2004l[?2004h>         for row in reader:
+[?2004l[?2004h>             tx_id = row['tx_id']
+[?2004l[?2004h>             ts = parse_ts(row['timestamp'])
+[?2004l[?2004h>             if tx_id not in records or ts >= records[tx_id]['ts']:
+[?2004l[?2004h>                 records[tx_id] = {'ts': ts, 'amount': Decimal(row['amount'].strip()), 'status': row['status'].strip()}
+[?2004l[?2004h>     total_valid_amount = Decimal('0')
+[?2004l[?2004h>     valid_count = 0
+[?2004l[?2004h>     failed_count = 0
+[?2004l[?2004h>     for rec in records.values():
+[?2004l[?2004h>         if rec['status'] == 'VALID':
+[?2004l[?2004h>             total_valid_amount += rec['amount']
+[?2004l[?2004h>             valid_count += 1
+[?2004l[?2004h>         elif rec['status'] == 'FAILED':
+[?2004l[?2004h>             failed_count += 1
+[?2004l[?2004h>     rounded_total = total_valid_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+[?2004l[?2004h>     return {'total_valid_amount': float(rounded_total), 'valid_count': valid_count, 'failed_count': failed_count}
+[?2004l[?2004h> 
+[?2004l[?2004h> def main():
+[?2004l[?2004h>     parser = argparse.ArgumentParser()
+[?2004l[?2004h>     parser.add_argument('--input', required=True)
+[?2004l[?2004h>     args = parser.parse_args()
+[?2004l[?2004h>     result = reconcile(args.input)
+[?2004l[?2004h>     print(json.dumps(result))
+[?2004l[?2004h> 
+[?2004l[?2004h> if __name__ == '__main__':
+[?2004l[?2004h>     main()
+[?2004l[?2004h> ''').lstrip()
+[?2004l[?2004h> with open('/app/reconcile.py','w') as f:
+[?2004l[?2004h>     f.write(code)
+[?2004l[?2004h> "
+[?2004l[?2004hroot@898bf4e3b85c:/app# 

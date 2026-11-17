@@ -1,0 +1,168 @@
+[?2004hroot@21d2f7e40c9b:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@21d2f7e40c9b:/app# clear
+[?2004l[H[J[3J[?2004hroot@21d2f7e40c9b:/app# cat /app/reconcile.py
+[?2004limport argparse
+import csv
+from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
+import json
+
+
+def reconcile(csv_path: str) -> dict:
+    records: dict[str, dict] = {}
+    with open(csv_path, mode="r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            tx_id = row["tx_id"]
+            # Bug 3: Stripping timezone offset before comparison (naive comparison)
+            ts = datetime.fromisoformat(row["timestamp"].strip()).replace(tzinfo=None)
+            if tx_id not in records or ts >= records[tx_id]["ts"]:
+                records[tx_id] = {
+                    "ts": ts,
+                    "amount": Decimal(row["amount"].strip()),
+                    "status": row["status"].strip(),
+                }
+
+    total_valid_amount = Decimal("0")
+    valid_count = 0
+    failed_count = 0
+
+    for rec in records.values():
+        status = rec["status"]
+        # Bug 2: Incorrectly treating PENDING as VALID
+        if status in ("VALID", "PENDING"):
+            total_valid_amount += rec["amount"]
+            valid_count += 1
+        elif status == "FAILED":
+            failed_count += 1
+
+    rounded_total = total_valid_amount.quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP
+    )
+    return {
+        "total_valid_amount": float(rounded_total),
+        "valid_count": valid_count,
+        "failed_count": failed_count,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Payment Reconciliation CLI")
+    parser.add_argument("--input", required=True, help="Path to input CSV file")
+    args = parser.parse_args()
+
+    # Bug 1: Defect in accessing CLI argument (input_file instead of input)
+    result = reconcile(args.input_file)
+    print(json.dumps(result))
+
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@21d2f7e40c9b:/app# ls /app/
+[?2004lreconcile.py
+[?2004hroot@21d2f7e40c9b:/app# python3 -c "
+[?2004l[?2004h> code = '''import argparse
+[?2004l[?2004h> import csv
+[?2004l[?2004h> import json
+[?2004l[?2004h> import re
+[?2004l[?2004h> from datetime import datetime, timezone, timedelta
+[?2004l[?2004h> from decimal import Decimal, ROUND_HALF_UP
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def parse_timestamp_ns(ts_string):
+[?2004l[?2004h>     ts = ts_string.strip()
+[?2004l[?2004h>     if ts.endswith('Z'):
+[?2004l[?2004h>         ts = ts[:-1] + '+00:00'
+[?2004l[?2004h>     m = re.match(r'^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})(\\.\\d+)?([+-]\\d{2}:\\d{2})$', ts)
+[?2004l[?2004h>     if not m:
+[?2004l[?2004h>         raise ValueError(f'Bad timestamp: {ts_string}')
+[?2004l[?2004h>     base_str, frac_str, tz_str = m.group(1), m.group(2), m.group(3)
+[?2004l[?2004h>     dt = datetime.fromisoformat(base_str + tz_str)
+[?2004l[?2004h>     epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+[?2004l[?2004h>     delta = dt - epoch
+[?2004l[?2004h>     total_ns = delta.days * 86400 * 10**9 + delta.seconds * 10**9 + delta.microseconds * 1000
+[?2004l[?2004h>     if frac_str:
+[?2004l[?2004h>         frac = frac_str[1:].ljust(9, '0')[:9]
+[?2004l[?2004h>         total_ns += int(frac)
+[?2004l[?2004h>     return total_ns
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def reconcile(csv_path):
+[?2004l[?2004h>     records = {}
+[?2004l[?2004h>     with open(csv_path, mode='r', encoding='utf-8') as f:
+[?2004l[?2004h>         reader = csv.DictReader(f)
+[?2004l[?2004h>         for row in reader:
+[?2004l[?2004h>             tx_id = row['tx_id']
+[?2004l[?2004h>             ts_ns = parse_timestamp_ns(row['timestamp'])
+[?2004l[?2004h>             if tx_id not in records or ts_ns >= records[tx_id]['ts']:
+[?2004l[?2004h>                 records[tx_id] = {
+[?2004l[?2004h>                     'ts': ts_ns,
+[?2004l[?2004h>                     'amount': Decimal(row['amount'].strip()),
+[?2004l[?2004h>                     'status': row['status'].strip(),
+[?2004l[?2004h>                 }
+[?2004l[?2004h>     total_valid_amount = Decimal('0')
+[?2004l[?2004h>     valid_count = 0
+[?2004l[?2004h>     failed_count = 0
+[?2004l[?2004h>     for rec in records.values():
+[?2004l[?2004h>         status = rec['status']
+[?2004l[?2004h>         if status == 'VALID':
+[?2004l[?2004h>             total_valid_amount += rec['amount']
+[?2004l[?2004h>             valid_count += 1
+[?2004l[?2004h>         elif status == 'FAILED':
+[?2004l[?2004h>             failed_count += 1
+[?2004l[?2004h>     rounded_total = total_valid_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+[?2004l[?2004h>     return {
+[?2004l[?2004h>         'total_valid_amount': float(rounded_total),
+[?2004l[?2004h>         'valid_count': valid_count,
+[?2004l[?2004h>         'failed_count': failed_count,
+[?2004l[?2004h>     }
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def main():
+[?2004l[?2004h>     parser = argparse.ArgumentParser(description='Payment Reconciliation CLI')
+[?2004l[?2004h>     parser.add_argument('--input', required=True, help='Path to input CSV file')
+[?2004l[?2004h>     args = parser.parse_args()
+[?2004l[?2004h>     result = reconcile(args.input)
+[?2004l[?2004h>     print(json.dumps(result))
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> if __name__ == '__main__':
+[?2004l[?2004h>     main()
+[?2004l[?2004h> '''
+[?2004l[?2004h> with open('/app/reconcile.py', 'w') as f:
+[?2004l[?2004h>     f.write(code)
+[?2004l[?2004h> print('done')
+[?2004l[?2004h> "
+[?2004l<string>:14: SyntaxWarning: invalid escape sequence '\d'
+done
+[?2004hroot@21d2f7e40c9b:/app# cat > /tmp/test.csv << 'EOF'
+[?2004l[?2004h> tx_id,timestamp,amount,status
+[?2004l[?2004h> t1,2026-05-01T12:00:00+00:00,10.00,VALID
+[?2004l[?2004h> t1,2026-05-01T08:00:00-04:00,20.00,FAILED
+[?2004l[?2004h> t2,2026-05-01T12:00:00.123456789+00:00,5.00,VALID
+[?2004l[?2004h> t3,2026-05-01T16:00:00Z,3.555,PENDING
+[?2004l[?2004h> t4,2026-05-01T16:00:00Z,7.00,VALID
+[?2004l[?2004h> t4,2026-05-01T16:00:00Z,8.00,VALID
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@21d2f7e40c9b:/app# python3 /app/reconcile.py --input /tmp/test.csv
+[?2004l{"total_valid_amount": 13.0, "valid_count": 2, "failed_count": 1}
+[?2004hroot@21d2f7e40c9b:/app# grep 're.match' /app/reconcile.py
+[?2004l    m = re.match(r'^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(\.\d+)?([+-]\d{2}:\d{2})$', ts)
+[?2004hroot@21d2f7e40c9b:/app# cat > /tmp/test2.csv << 'EOF'
+[?2004l[?2004h> tx_id,timestamp,amount,status
+[?2004l[?2004h> t1,2026-05-01T12:00:00.123456100+00:00,10.00,VALID
+[?2004l[?2004h> t1,2026-05-01T12:00:00.123456099+00:00,99.00,FAILED
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@21d2f7e40c9b:/app# python3 /app/reconcile.py --input /tmp/test2.csv
+[?2004l{"total_valid_amount": 10.0, "valid_count": 1, "failed_count": 0}
+[?2004hroot@21d2f7e40c9b:/app# cat > /tmp/test3.csv << 'EOF'
+[?2004l[?2004h> tx_id,timestamp,amount,status
+[?2004l[?2004h> t1,2026-05-01T12:00:00Z,10.005,VALID
+[?2004l[?2004h> t2,2026-05-01T12:00:00+00:00,20.005,VALID
+[?2004l[?2004h> t3,2026-05-01T12:00:00Z,30.005,VALID
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@21d2f7e40c9b:/app# python3 /app/reconcile.py --input /tmp/test3.csv
+[?2004l{"total_valid_amount": 60.02, "valid_count": 3, "failed_count": 0}
+[?2004hroot@21d2f7e40c9b:/app# 

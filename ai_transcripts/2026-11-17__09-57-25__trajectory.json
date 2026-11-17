@@ -1,0 +1,22 @@
+{
+  "schema_version": "ATIF-v1.7",
+  "session_id": "0a566739-8dd7-4e29-80c0-8caf3a8910e7",
+  "agent": {
+    "name": "gemini-cli",
+    "version": "0.68.0"
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "timestamp": "2026-11-17T09:59:36.305Z",
+      "source": "user",
+      "message": "<session_context>\nThis is the Gemini CLI. We are setting up the context for our chat.\nToday's date is Tuesday, November 17, 2026 (formatted according to the user's locale).\nMy operating system is: linux\nThe project's temporary directory is: /root/.gemini/tmp/app\n- **Workspace Directories:**\n  - /app\n- **Directory Structure:**\n\nShowing up to 200 items (files + folders).\n\n/app/\n\u2514\u2500\u2500\u2500reconcile.py\n\n\n</session_context>"
+    }
+  ],
+  "final_metrics": {
+    "total_prompt_tokens": 0,
+    "total_completion_tokens": 0,
+    "total_cached_tokens": 0,
+    "total_steps": 1
+  }
+}

@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*.swp
+.env
+.venv/
+node_modules/
+jobs/
